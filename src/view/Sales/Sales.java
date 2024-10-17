@@ -1,0 +1,332 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ */
+package view.Sales;
+
+import controllers.DebtController;
+import controllers.SaleController;
+import java.awt.Color;
+import java.awt.Font;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.plaf.basic.BasicInternalFrameUI;
+import javax.swing.table.DefaultTableModel;
+import model.Sale;
+import model.User;
+import model.Debt;
+import model.Product;
+
+/**
+ *
+ * @author joanp
+ */
+public class Sales extends javax.swing.JInternalFrame {
+
+    private final User user;
+    private final DebtController controllerdebt;
+    private final SaleController controller;
+
+    /**
+     * Creates new form Sales
+     *
+     * @param user
+     */
+    public Sales(User user) {
+        initComponents();
+        setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        BasicInternalFrameUI bui = (BasicInternalFrameUI) this.getUI();
+        bui.setNorthPane(null);
+        controller = new SaleController();
+        controllerdebt = new DebtController();
+        this.user = user;
+        addTabChangeListener();
+        setLblDate();
+        fillSalesTable();
+    }
+
+    private void addTabChangeListener() {
+        tabbedTables.addChangeListener((ChangeEvent e) -> {
+            int selectedIndex = tabbedTables.getSelectedIndex();
+            if (selectedIndex == 0) {
+                fillSalesTable();
+            } else if (selectedIndex == 1) {
+                fillSalesLoanTable();
+            }
+        });
+    }
+
+    private void tableCustomization() {
+        salesTable.getTableHeader().setFont(new Font("Rockwell", Font.BOLD, 14));
+        salesTable.getTableHeader().setOpaque(true);
+        salesTable.getTableHeader().setBackground(new Color(255, 255, 255));
+        salesTable.getTableHeader().setForeground(new Color(0, 0, 0));
+    }
+
+    private void tableLoanCustomization() {
+        salesLoanTable.getTableHeader().setFont(new Font("Rockwell", Font.BOLD, 14));
+        salesLoanTable.getTableHeader().setOpaque(true);
+        salesLoanTable.getTableHeader().setBackground(new Color(255, 255, 255));
+        salesLoanTable.getTableHeader().setForeground(new Color(0, 0, 0));
+    }
+
+    private void fillSalesTable() {
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        ArrayList<Sale> sales = controller.listTrainerSales(user.getCedula());
+        model.setColumnIdentifiers(new Object[]{
+            "#", "Fecha", "Producto", "Total", "Metodo de pago"
+        });
+
+        salesTable.setModel(model);
+        tableCustomization();
+
+        float total = 0;
+
+        for (int i = 0; i < sales.size(); i++) {
+            Sale sale = sales.get(i);
+            total += sales.get(i).getTotal();
+            model.addRow(new Object[]{
+                sale.getId(),
+                sale.getDate(),
+                sale.getProduct().getName(),
+                sale.getProduct().getPrice(),
+                sale.getPaymentMethod()
+
+            });
+        }
+        setLblTotal(total);
+    }
+
+    private void fillSalesLoanTable() {
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        ArrayList<Debt> debts = controllerdebt.listProductsDebts();
+        model.setColumnIdentifiers(new Object[]{
+            "#", "# producto", "Fecha", "Producto", "Vendido a", "Total", "Método de pago"
+        });
+
+        salesLoanTable.setModel(model);
+        tableLoanCustomization();
+
+        float total = 0;
+
+        for (int i = 0; i < debts.size(); i++) {
+            Debt debt = debts.get(i);
+            total += debts.get(i).getTotal();
+            model.addRow(new Object[]{
+                debt.getId(),
+                debt.getProduct().getId(),
+                debt.getDate(),
+                debt.getProduct().getName(),
+                debt.getCustomer().getFullname(),
+                debt.getProduct().getPrice(),
+                debt.getPaymentMethod()
+
+            });
+        }
+        setLblTotal(total);
+    }
+
+    private void setLblTotal(float total) {
+        lblTotal.setText(String.valueOf(total));
+    }
+
+    private void setLblDate() {
+        lblDate.setText(String.valueOf(LocalDate.now()));
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        lblDate = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        tabbedTables = new javax.swing.JTabbedPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        salesTable = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        salesLoanTable = new javax.swing.JTable();
+
+        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+        jPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel1MouseClicked(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Ventas del día:");
+
+        lblDate.setFont(new java.awt.Font("Rockwell", 0, 18)); // NOI18N
+        lblDate.setForeground(new java.awt.Color(255, 255, 255));
+        lblDate.setText("jLabel2");
+
+        lblTotal.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        lblTotal.setForeground(new java.awt.Color(255, 255, 255));
+        lblTotal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lblTotal.setText("50.000");
+
+        jLabel2.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Total:");
+
+        tabbedTables.setForeground(new java.awt.Color(255, 255, 255));
+        tabbedTables.setFont(new java.awt.Font("Rockwell", 1, 18)); // NOI18N
+
+        salesTable.setBackground(new java.awt.Color(255, 255, 255));
+        salesTable.setFont(new java.awt.Font("Rockwell", 1, 14)); // NOI18N
+        salesTable.setForeground(new java.awt.Color(0, 0, 0));
+        salesTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        salesTable.setSelectionBackground(new java.awt.Color(254, 205, 77));
+        jScrollPane1.setViewportView(salesTable);
+
+        tabbedTables.addTab("Ventas", jScrollPane1);
+
+        salesLoanTable.setBackground(new java.awt.Color(255, 255, 255));
+        salesLoanTable.setFont(new java.awt.Font("Rockwell", 1, 14)); // NOI18N
+        salesLoanTable.setForeground(new java.awt.Color(0, 0, 0));
+        salesLoanTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        salesLoanTable.setSelectionBackground(new java.awt.Color(254, 205, 77));
+        salesLoanTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                salesLoanTableMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(salesLoanTable);
+
+        tabbedTables.addTab("Fiados", jScrollPane2);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(170, 170, 170)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 598, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)
+                        .addGap(34, 34, 34)
+                        .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tabbedTables, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 847, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(40, 40, 40)
+                        .addComponent(lblDate, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(400, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(111, 111, 111)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(lblDate))
+                .addGap(18, 18, 18)
+                .addComponent(tabbedTables, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(lblTotal))
+                .addContainerGap(320, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void salesLoanTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_salesLoanTableMouseClicked
+        int selectedRow = salesLoanTable.getSelectedRow();
+
+        if (selectedRow != -1) {
+
+            int idLoan = Integer.parseInt(salesLoanTable.getValueAt(selectedRow, 0).toString());
+            int idProduct = Integer.parseInt(salesLoanTable.getValueAt(selectedRow, 1).toString());
+            String nombre = salesLoanTable.getValueAt(selectedRow, 4).toString();
+            String total = salesLoanTable.getValueAt(selectedRow, 5).toString();
+            int option = JOptionPane.showConfirmDialog(null, "¿Estás seguro de pagar " + total + " la deuda de" + nombre + "?", "Confirmar pago", JOptionPane.YES_NO_OPTION);
+
+            if (option == JOptionPane.YES_OPTION) {
+                Product product = (Product) controllerdebt.selectProduct(idProduct);
+                String payment = salesLoanTable.getValueAt(selectedRow, 6).toString();
+                Sale sale = new Sale(product, user, payment);
+                controllerdebt.repayDebt(sale, idLoan);
+                JOptionPane.showMessageDialog(null, "Se pago correctamente el producto que se debía");
+                fillSalesTable();
+                fillSalesLoanTable();
+            }
+
+        }
+    }//GEN-LAST:event_salesLoanTableMouseClicked
+
+    private void jPanel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseClicked
+        salesLoanTable.clearSelection();
+        salesTable.clearSelection();
+    }//GEN-LAST:event_jPanel1MouseClicked
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblDate;
+    private javax.swing.JLabel lblTotal;
+    private javax.swing.JTable salesLoanTable;
+    private javax.swing.JTable salesTable;
+    private javax.swing.JTabbedPane tabbedTables;
+    // End of variables declaration//GEN-END:variables
+}
